@@ -140,6 +140,14 @@ h1 { font-size: clamp(44px, 5.7vw, 72px); margin: 0 0 28px; }
 .camera-card video, .camera-card img { width: 100%; aspect-ratio: 4 / 3; display: block; object-fit: cover; border-radius: 8px; background: #27342d; transform: scaleX(-1); }
 .camera-card img { transform: none; }
 .camera-card .primary { margin-top: 18px; }
+.camera-card .primary:disabled { opacity: .7; cursor: default; }
+.face-dare { width: min(100%, 600px); margin: -10px auto 22px; padding: 18px 22px; display: flex; align-items: center; gap: 18px; text-align: left; background: #fffdf8; border: 1px dashed #e69b65; border-radius: 8px; animation: rise .35s ease both; }
+.face-dare-emoji { font-size: 46px; line-height: 1; animation: wiggle 1.6s ease-in-out infinite; }
+.face-dare .kicker { margin: 0 0 4px; }
+.face-dare-text { margin: 0; font: italic 600 20px/1.3 "Playfair Display", serif; color: #29362f; }
+.face-dare .text-button { margin-left: auto; flex-shrink: 0; font-size: 13px; }
+.countdown { position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 4 / 3; display: grid; place-items: center; color: white; font: 600 120px "Playfair Display", serif; text-shadow: 0 4px 20px rgba(0,0,0,.45); animation: count-pop 1s ease-out both; pointer-events: none; }
+.dare-caption { margin: 12px 0 0; color: #b8673f; font-weight: 600; }
 .camera-card .photo-pop { animation: photo-pop .5s ease both; }
 .photo-actions { display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; }
 .photo-actions .text-button { margin-top: 18px; }
@@ -183,6 +191,8 @@ footer { max-width: 1200px; margin: auto; padding: 22px 30px; border-top: 1px so
 @keyframes hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes photo-pop { from { opacity: 0; scale: .92; } }
 @keyframes ease-down { from { width: var(--from); } }
+@keyframes wiggle { 0%, 100% { rotate: -8deg; } 50% { rotate: 8deg; } }
+@keyframes count-pop { from { opacity: 0; scale: 1.6; } 30% { opacity: 1; scale: 1; } }
 @keyframes breathe { 0%, 100% { transform: scale(.78) rotate(-3deg); } 50% { transform: scale(1.08) rotate(3deg); } }
 
 @media (max-width: 760px) {
@@ -199,6 +209,8 @@ footer { max-width: 1200px; margin: auto; padding: 22px 30px; border-top: 1px so
   .progress { margin-bottom: 45px; }
   .meter-card { padding: 35px 20px; }
   .text-button { display: block; margin: 22px 0 0; }
+  .face-dare { flex-wrap: wrap; }
+  .face-dare .text-button { margin: 0; }
   .bubbles { grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0; }
   .permission { padding: 45px 25px; }
   footer { flex-direction: column; padding: 22px; }

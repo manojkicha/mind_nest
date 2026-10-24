@@ -89,6 +89,19 @@ const results = [
   },
 ];
 
+const funnyFaces = [
+  { emoji: "🐹", text: "Puff your cheeks like a hamster hiding snacks" },
+  { emoji: "🐟", text: "Make a fish face — suck in those cheeks!" },
+  { emoji: "🤪", text: "Cross your eyes and stick out your tongue" },
+  { emoji: "😲", text: "Look totally shocked, like you found a clean room" },
+  { emoji: "🦁", text: "Give your best silent lion roar" },
+  { emoji: "🤨", text: "Raise one eyebrow like a suspicious detective" },
+  { emoji: "😘", text: "Blow a big dramatic air kiss" },
+  { emoji: "🐰", text: "Bunny teeth and a twitchy nose" },
+  { emoji: "🧐", text: "Squint like you're reading tiny toy instructions" },
+  { emoji: "😁", text: "Your biggest, cheesiest school-photo grin" },
+];
+
 function Mark() {
   return (
     <div className="mark" aria-hidden="true">
@@ -109,6 +122,8 @@ export default function App() {
   const [photo, setPhoto] = useState("");
   const [cameraError, setCameraError] = useState("");
   const [cameraOn, setCameraOn] = useState(false);
+  const [faceIndex, setFaceIndex] = useState(() => Math.floor(Math.random() * funnyFaces.length));
+  const [countdown, setCountdown] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -265,6 +280,27 @@ export default function App() {
     streamRef.current = null;
     setCameraOn(false);
   }
+
+  function nextFace() {
+    setFaceIndex((index) => (index + 1 + Math.floor(Math.random() * (funnyFaces.length - 1))) % funnyFaces.length);
+  }
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (game !== "smile") {
+      setCountdown(null);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      if (countdown <= 1) {
+        takePhoto();
+        setCountdown(null);
+      } else {
+        setCountdown(countdown - 1);
+      }
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [countdown, game]);
 
   function playXo(index: number) {
     if (xoBoard[index] || getWinner(xoBoard)) return;
@@ -470,18 +506,34 @@ export default function App() {
             <>
               <p className="kicker">A smile just for you</p>
               <h1>Catch a lighter moment.</h1>
+              {!photo && (
+                <div className="face-dare">
+                  <span className="face-dare-emoji" aria-hidden="true">{funnyFaces[faceIndex].emoji}</span>
+                  <div>
+                    <p className="kicker">Your funny-face dare</p>
+                    <p className="face-dare-text">{funnyFaces[faceIndex].text}</p>
+                  </div>
+                  <button className="text-button" onClick={nextFace} disabled={countdown !== null}>Give me a different one</button>
+                </div>
+              )}
               <div className="camera-card">
                 {photo ? (
                   <img className="photo-pop" src={photo} alt="Your captured smiling portrait" />
                 ) : (
                   <video ref={videoRef} playsInline muted aria-label="Camera preview" />
                 )}
+                {countdown !== null && <div className="countdown" aria-live="assertive" key={countdown}>{countdown}</div>}
+                {photo && <p className="dare-caption">Dare complete: {funnyFaces[faceIndex].text.toLowerCase()} {funnyFaces[faceIndex].emoji}</p>}
                 <canvas ref={canvasRef} hidden />
                 {!photo && !cameraOn && <button className="primary" onClick={startCamera}>Turn on my camera</button>}
-                {!photo && cameraOn && <button className="primary shutter" onClick={takePhoto}>Take my smile photo</button>}
+                {!photo && cameraOn && (
+                  <button className="primary shutter" onClick={() => setCountdown(3)} disabled={countdown !== null}>
+                    {countdown === null ? "I'm ready — 3, 2, 1!" : "Hold that face…"}
+                  </button>
+                )}
                 {photo && (
                   <div className="photo-actions">
-                    <button className="primary" onClick={() => setPhoto("")}>Take another</button>
+                    <button className="primary" onClick={() => { setPhoto(""); nextFace(); }}>Try a new dare</button>
                     <a className="text-button" href={photo} download="mind-nest-smile.jpg">Save my photo</a>
                   </div>
                 )}
