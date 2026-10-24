@@ -20,50 +20,50 @@ function getWinner(board: string[]) {
 const questions = [
   {
     eyebrow: "Energy check",
-    text: "Your morning routine felt like…",
+    text: "Which battery are you right now?",
     answers: [
-      ["A gentle stroll", 0],
-      ["A relay race", 1],
-      ["A fire drill with cereal", 2],
+      { emoji: "🔋", label: "Fully charged", value: 0 },
+      { emoji: "🪫", label: "Running on 20%", value: 1 },
+      { emoji: "🧟", label: "Zombie mode activated", value: 2 },
     ],
   },
   {
-    eyebrow: "Patience check",
-    text: "Someone just asked “why?” for the 47th time. You…",
+    eyebrow: "Mind check",
+    text: "Pick today's weather inside your head.",
     answers: [
-      ["Smile and answer", 0],
-      ["Need one deep breath", 1],
-      ["Consider changing my name", 2],
+      { emoji: "☀️", label: "Sunny and clear", value: 0 },
+      { emoji: "⛅", label: "Partly cloudy", value: 1 },
+      { emoji: "⛈️", label: "Thunderstorm with hail", value: 2 },
     ],
   },
   {
-    eyebrow: "Body check",
-    text: "How is your body feeling right now?",
+    eyebrow: "Mood check",
+    text: "Which animal is your mood?",
     answers: [
-      ["Loose and comfortable", 0],
-      ["A little wound up", 1],
-      ["Like a human pretzel", 2],
+      { emoji: "🦥", label: "Chill sloth", value: 0 },
+      { emoji: "🐿️", label: "Busy squirrel", value: 1 },
+      { emoji: "🐙", label: "Octopus juggling 8 things", value: 2 },
     ],
   },
   {
-    eyebrow: "Focus check",
-    text: "How many tabs are open in your brain?",
+    eyebrow: "Fuel check",
+    text: "How's your coffee situation?",
     answers: [
-      ["Just a tidy few", 0],
-      ["About seventeen", 1],
-      ["The browser has crashed", 2],
+      { emoji: "☕", label: "One calm, warm sip", value: 0 },
+      { emoji: "🔁", label: "Cup number three", value: 1 },
+      { emoji: "🥶", label: "Reheated four times, still cold", value: 2 },
     ],
   },
   {
     eyebrow: "Support check",
-    text: "How supported do you feel today?",
+    text: "Who's on your team today?",
     answers: [
-      ["I have my people", 0],
-      ["I could use a hand", 1],
-      ["I feel like a one-person circus", 2],
+      { emoji: "🙌", label: "A whole cheer squad", value: 0 },
+      { emoji: "🤝", label: "One trusty helper", value: 1 },
+      { emoji: "🤹", label: "One-person circus", value: 2 },
     ],
   },
-] as const;
+];
 
 const results = [
   {
@@ -350,7 +350,7 @@ export default function App() {
             <p className="kicker">A 2-minute check-in</p>
             <h1>Care for the person who cares for everyone.</h1>
             <p className="lede">
-              Five light questions to see how full your cup is — then a tiny activity to help you feel a little more like you.
+              Five funny pictures to see how full your cup is — then a tiny activity to help you feel a little more like you.
             </p>
             <button className="primary" onClick={() => setScreen("quiz")}>
               Check in with myself <span aria-hidden="true">→</span>
@@ -374,17 +374,16 @@ export default function App() {
           <div className="question-card" key={step}>
             <p className="kicker">{questions[step].eyebrow}</p>
             <h2>{questions[step].text}</h2>
-            <div className="answers">
-              {questions[step].answers.map(([label, value], index) => (
+            <div className="answers picture-answers">
+              {questions[step].answers.map(({ emoji, label, value }) => (
                 <button key={label} onClick={() => choose(value)}>
-                  <span>{String.fromCharCode(65 + index)}</span>
+                  <span className="answer-emoji" aria-hidden="true">{emoji}</span>
                   {label}
-                  <b aria-hidden="true">→</b>
                 </button>
               ))}
             </div>
           </div>
-          <p className="quiz-note">There are no right answers here.</p>
+          <p className="quiz-note">Tap the picture that feels most like you. There are no wrong answers.</p>
         </section>
       )}
 
