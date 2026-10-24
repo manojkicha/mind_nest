@@ -277,6 +277,7 @@ export default function App() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
+      document.querySelector(".camera-card")?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch {
       setCameraError("Camera access wasn’t available. Check your browser permission and try again.");
     }
@@ -552,7 +553,7 @@ export default function App() {
             <>
               <p className="kicker">A smile just for you</p>
               <h1>Catch a lighter moment.</h1>
-              {!photo && (
+              {!photo && !cameraOn && (
                 <div className="face-dare">
                   <span className="face-dare-emoji" aria-hidden="true">{funnyFaces[faceIndex].emoji}</span>
                   <div>
@@ -567,6 +568,18 @@ export default function App() {
                   <img className="photo-pop" src={photo} alt="Your captured smiling portrait" />
                 ) : (
                   <video ref={videoRef} playsInline muted aria-label="Camera preview" />
+                )}
+                {!photo && cameraOn && (
+                  <div className="dare-overlay" key={faceIndex} aria-live="polite">
+                    <span className="dare-overlay-emoji" aria-hidden="true">{funnyFaces[faceIndex].emoji}</span>
+                    <div>
+                      <small>Your dare — pull this face!</small>
+                      <b>{funnyFaces[faceIndex].text}</b>
+                    </div>
+                    {countdown === null && (
+                      <button onClick={nextFace} aria-label="Give me a different dare" title="Give me a different dare">↻</button>
+                    )}
+                  </div>
                 )}
                 {countdown !== null && <div className="countdown" aria-live="assertive" key={countdown}>{countdown}</div>}
                 {photo && <p className="dare-caption">Dare complete: {funnyFaces[faceIndex].text.toLowerCase()} {funnyFaces[faceIndex].emoji}</p>}

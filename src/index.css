@@ -154,6 +154,12 @@ h1 { font-size: clamp(44px, 5.7vw, 72px); margin: 0 0 28px; }
 .face-dare-text { margin: 0; font: italic 600 20px/1.3 "Playfair Display", serif; color: #29362f; }
 .face-dare .text-button { margin-left: auto; flex-shrink: 0; font-size: 13px; }
 .countdown { position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 4 / 3; display: grid; place-items: center; color: white; font: 600 120px "Playfair Display", serif; text-shadow: 0 4px 20px rgba(0,0,0,.45); animation: count-pop 1s ease-out both; pointer-events: none; }
+.dare-overlay { position: absolute; top: 12px; left: 12px; right: 12px; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 14px; text-align: left; background: rgba(255,253,248,.94); border-radius: 12px; box-shadow: 0 8px 22px rgba(0,0,0,.18); animation: rise .35s ease both; }
+.dare-overlay-emoji { font-size: 34px; line-height: 1; animation: wiggle 1.6s ease-in-out infinite; }
+.dare-overlay small { display: block; color: #b8673f; font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.dare-overlay b { font: italic 600 17px/1.25 "Playfair Display", serif; color: #29362f; }
+.dare-overlay button { margin-left: auto; flex-shrink: 0; width: 36px; height: 36px; border: 1px solid #d9d6cd; border-radius: 50%; background: white; color: #30483d; font-size: 18px; }
+.dare-overlay button:hover { border-color: #819689; }
 .dare-caption { margin: 12px 0 0; color: #b8673f; font-weight: 600; }
 .camera-card .photo-pop { animation: photo-pop .5s ease both; }
 .photo-actions { display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; }
