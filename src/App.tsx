@@ -121,6 +121,10 @@ export default function App() {
   const score = answers.reduce((sum, value) => sum + value, 0);
   const result = results.find((item) => score <= item.max) ?? results[2];
   const percent = Math.round((score / 10) * 100);
+  // Gentle estimate of how much a smile break eases the load — not a measurement.
+  const smileRelief = Math.min(percent, Math.max(10, Math.round(percent * 0.3)));
+  const afterSmile = percent - smileRelief;
+  const afterSmileResult = results.find((item) => afterSmile <= item.max * 10) ?? results[2];
 
   useEffect(() => {
     if (game !== "breathe") return;
@@ -250,7 +254,12 @@ export default function App() {
     if (!video || !canvas || !video.videoWidth) return;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    // Mirror like the live preview so the shown and saved photo match.
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(video, 0, 0);
     setPhoto(canvas.toDataURL("image/jpeg", 0.9));
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
@@ -463,16 +472,46 @@ export default function App() {
               <h1>Catch a lighter moment.</h1>
               <div className="camera-card">
                 {photo ? (
-                  <img src={photo} alt="Your captured smiling portrait" />
+                  <img className="photo-pop" src={photo} alt="Your captured smiling portrait" />
                 ) : (
                   <video ref={videoRef} playsInline muted aria-label="Camera preview" />
                 )}
                 <canvas ref={canvasRef} hidden />
                 {!photo && !cameraOn && <button className="primary" onClick={startCamera}>Turn on my camera</button>}
                 {!photo && cameraOn && <button className="primary shutter" onClick={takePhoto}>Take my smile photo</button>}
-                {photo && <button className="primary" onClick={() => setPhoto("")}>Take another</button>}
+                {photo && (
+                  <div className="photo-actions">
+                    <button className="primary" onClick={() => setPhoto("")}>Take another</button>
+                    <a className="text-button" href={photo} download="mind-nest-smile.jpg">Save my photo</a>
+                  </div>
+                )}
                 {cameraError && <p className="camera-error" role="alert">{cameraError}</p>}
               </div>
+              {photo && (
+                <div className="relief-card" role="status">
+                  <p className="kicker">After your smile</p>
+                  <h2>
+                    {smileRelief > 0 ? <>About <em>{smileRelief}% lighter</em> already.</> : <>Still beautifully <em>steady</em>.</>}
+                  </h2>
+                  <div className="relief-row">
+                    <span>Before</span>
+                    <div className="relief-track"><i style={{ width: `${percent}%`, background: result.color }} /></div>
+                    <b>{percent}%</b>
+                  </div>
+                  <div className="relief-row">
+                    <span>Now</span>
+                    <div className="relief-track">
+                      <i className="relief-now" style={{ "--from": `${percent}%`, width: `${afterSmile}%`, background: afterSmileResult.color } as React.CSSProperties} />
+                    </div>
+                    <b>{afterSmile}%</b>
+                  </div>
+                  <p className="relief-level">
+                    <span style={{ color: result.color }}>{result.label}</span>
+                    {afterSmileResult.label !== result.label && <> → <span style={{ color: afterSmileResult.color }}>{afterSmileResult.label}</span></>}
+                  </p>
+                  <small>A friendly estimate — smiling, even briefly, can help your body ease tension. Not a medical measurement.</small>
+                </div>
+              )}
               <p>Your photo stays in this browser and is not uploaded or saved by Mind Nest AI.</p>
             </>
           )}

@@ -138,8 +138,22 @@ h1 { font-size: clamp(44px, 5.7vw, 72px); margin: 0 0 28px; }
 .permission > span { display: block; margin-top: 40px; font: italic 600 17px "Playfair Display", serif; }
 .camera-card { width: min(100%, 600px); margin: 0 auto 30px; position: relative; }
 .camera-card video, .camera-card img { width: 100%; aspect-ratio: 4 / 3; display: block; object-fit: cover; border-radius: 8px; background: #27342d; transform: scaleX(-1); }
-.camera-card img { transform: scaleX(-1); }
+.camera-card img { transform: none; }
 .camera-card .primary { margin-top: 18px; }
+.camera-card .photo-pop { animation: photo-pop .5s ease both; }
+.photo-actions { display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; }
+.photo-actions .text-button { margin-top: 18px; }
+.relief-card { width: min(100%, 600px); margin: 0 auto 30px; padding: 32px; background: #fffdf8; border: 1px solid #e1ddd3; box-shadow: 0 24px 60px rgba(50,55,48,.08); animation: rise .5s .2s ease both; }
+.relief-card .kicker { margin-bottom: 10px; }
+.relief-card h2 { font-size: 30px; margin: 0 0 24px; }
+.relief-card h2 em { color: #54a68a; }
+.relief-row { display: grid; grid-template-columns: 56px 1fr 44px; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #5d6861; text-align: left; }
+.relief-row b { text-align: right; color: #29362f; }
+.relief-track { height: 12px; border-radius: 6px; background: #e9e6de; overflow: hidden; }
+.relief-track i { display: block; height: 100%; border-radius: 6px; }
+.relief-now { animation: ease-down 1.4s .6s ease-out both; }
+.relief-level { margin: 18px 0 8px; font-weight: 600; }
+.relief-card small { color: #999d98; }
 .camera-error { color: #a34e45 !important; }
 .snake-board { width: min(82vw, 430px); aspect-ratio: 1; margin: 0 auto 24px; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr); gap: 2px; padding: 10px; background: #dfe8df; border: 1px solid #becdbf; border-radius: 8px; }
 .snake-part, .snake-head, .snake-food { display: block; border-radius: 35%; }
@@ -167,6 +181,8 @@ footer { max-width: 1200px; margin: auto; padding: 22px 30px; border-top: 1px so
 @keyframes sway { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
 @keyframes nestle { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 @keyframes hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes photo-pop { from { opacity: 0; scale: .92; } }
+@keyframes ease-down { from { width: var(--from); } }
 @keyframes breathe { 0%, 100% { transform: scale(.78) rotate(-3deg); } 50% { transform: scale(1.08) rotate(3deg); } }
 
 @media (max-width: 760px) {
