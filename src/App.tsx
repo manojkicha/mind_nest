@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import FamilyIllustration from "./FamilyIllustration";
+import StressDashboard, { type Session } from "./StressDashboard";
 
-type Screen = "welcome" | "quiz" | "report" | "games";
+type Screen = "welcome" | "quiz" | "report" | "games" | "dashboard";
 type Game = "breathe" | "tap" | "pause" | "smile" | "snake" | "xo";
 
 const winningLines = [
@@ -102,6 +103,13 @@ const funnyFaces = [
   { emoji: "😁", text: "Your biggest, cheesiest school-photo grin" },
 ];
 
+// Share of the current load each activity is estimated to ease — friendly estimates, not measurements.
+const reliefRates: Record<Game, number> = { breathe: 0.25, pause: 0.2, smile: 0.3, tap: 0.18, snake: 0.12, xo: 0.12 };
+
+function reliefFor(game: Game, level: number) {
+  return Math.min(level, Math.max(5, Math.round(level * reliefRates[game])));
+}
+
 function shuffleAnswers() {
   return questions.map((question) => [...question.answers].sort(() => Math.random() - 0.5));
 }
@@ -129,6 +137,8 @@ export default function App() {
   const [cameraOn, setCameraOn] = useState(false);
   const [faceIndex, setFaceIndex] = useState(() => Math.floor(Math.random() * funnyFaces.length));
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const activityStartRef = useRef(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -141,10 +151,12 @@ export default function App() {
   const score = answers.reduce((sum, value) => sum + value, 0);
   const result = results.find((item) => score <= item.max) ?? results[2];
   const percent = Math.round((score / 10) * 100);
-  // Gentle estimate of how much a smile break eases the load — not a measurement.
-  const smileRelief = Math.min(percent, Math.max(10, Math.round(percent * 0.3)));
-  const afterSmile = percent - smileRelief;
-  const afterSmileResult = results.find((item) => afterSmile <= item.max * 10) ?? results[2];
+  const levelOf = (value: number) => results.find((item) => value <= item.max * 10) ?? results[2];
+  const currentStress = sessions.length ? sessions[sessions.length - 1].after : percent;
+  const currentResult = levelOf(currentStress);
+  const smileRelief = reliefFor("smile", currentStress);
+  const afterSmile = currentStress - smileRelief;
+  const afterSmileResult = levelOf(afterSmile);
 
   useEffect(() => {
     if (game !== "breathe") return;
@@ -243,6 +255,7 @@ export default function App() {
     setStep(0);
     setAnswers([]);
     setAnswerOrder(shuffleAnswers());
+    setSessions([]);
     setGame(null);
     setTaps([]);
     setPhoto("");
@@ -285,6 +298,27 @@ export default function App() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     setCameraOn(false);
+  }
+
+  useEffect(() => {
+    if (game) activityStartRef.current = Date.now();
+  }, [game]);
+
+  function finishActivity() {
+    if (!game) return;
+    const card = gameCards.find((item) => item.id === game);
+    const after = currentStress - reliefFor(game, currentStress);
+    const seconds = Math.round((Date.now() - activityStartRef.current) / 1000);
+    setSessions((list) => [...list, { title: card?.title ?? game, icon: card?.icon ?? "•", before: currentStress, after, seconds }]);
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    setCameraOn(false);
+    setGame(null);
+    setTaps([]);
+    setPhoto("");
+    setXoBoard(Array(9).fill(""));
+    setScreen("dashboard");
+    window.scrollTo(0, 0);
   }
 
   function nextFace() {
@@ -423,6 +457,13 @@ export default function App() {
           <p className="lede">
             These activities were selected for your current stress level. No high scores — pick the one that feels easiest.
           </p>
+          {sessions.length > 0 && (
+            <button className="dash-banner" onClick={() => setScreen("dashboard")}>
+              <span>Stress so far</span>
+              <b>{percent}% → <em style={{ color: currentResult.color }}>{currentStress}%</em></b>
+              <span>View my calm dashboard →</span>
+            </button>
+          )}
           <div className="game-grid">
             {gameCards.map((item) => (
               <button className={`game-card ${item.tone}`} key={item.id} onClick={() => setGame(item.id)}>
@@ -552,19 +593,19 @@ export default function App() {
                   </h2>
                   <div className="relief-row">
                     <span>Before</span>
-                    <div className="relief-track"><i style={{ width: `${percent}%`, background: result.color }} /></div>
-                    <b>{percent}%</b>
+                    <div className="relief-track"><i style={{ width: `${currentStress}%`, background: currentResult.color }} /></div>
+                    <b>{currentStress}%</b>
                   </div>
                   <div className="relief-row">
                     <span>Now</span>
                     <div className="relief-track">
-                      <i className="relief-now" style={{ "--from": `${percent}%`, width: `${afterSmile}%`, background: afterSmileResult.color } as React.CSSProperties} />
+                      <i className="relief-now" style={{ "--from": `${currentStress}%`, width: `${afterSmile}%`, background: afterSmileResult.color } as React.CSSProperties} />
                     </div>
                     <b>{afterSmile}%</b>
                   </div>
                   <p className="relief-level">
-                    <span style={{ color: result.color }}>{result.label}</span>
-                    {afterSmileResult.label !== result.label && <> → <span style={{ color: afterSmileResult.color }}>{afterSmileResult.label}</span></>}
+                    <span style={{ color: currentResult.color }}>{currentResult.label}</span>
+                    {afterSmileResult.label !== currentResult.label && <> → <span style={{ color: afterSmileResult.color }}>{afterSmileResult.label}</span></>}
                   </p>
                   <small>A friendly estimate — smiling, even briefly, can help your body ease tension. Not a medical measurement.</small>
                 </div>
@@ -622,7 +663,25 @@ export default function App() {
               <p>No score is kept. This is just a small place for your mind to play.</p>
             </>
           )}
+          <div className="finish-bar">
+            <p>Feeling a little lighter?</p>
+            <button className="primary" onClick={finishActivity}>I'm done — show my calm dashboard <span aria-hidden="true">→</span></button>
+          </div>
         </section>
+      )}
+
+      {screen === "dashboard" && (
+        <StressDashboard
+          start={percent}
+          sessions={sessions}
+          levels={results}
+          checks={questions.map((question, index) => {
+            const picked = question.answers.find((answer) => answer.value === answers[index]) ?? question.answers[0];
+            return { eyebrow: question.eyebrow, ...picked };
+          })}
+          onPlayMore={() => { setScreen("games"); window.scrollTo(0, 0); }}
+          onRestart={restart}
+        />
       )}
 
       <footer>
