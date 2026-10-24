@@ -313,11 +313,11 @@ export default function App() {
           </div>
           <figure className="hero-art">
             <img
-              src="https://images.unsplash.com/photo-1720084026217-aa7e5bd2cdda?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=1080"
-              alt="A woman relaxing peacefully on a couch with her eyes closed"
+              src="https://images.unsplash.com/photo-1504298589646-858f2c46ce1d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=1080"
+              alt="A happy baby in a pink cardigan smiling, with soft twinkling lights behind"
             />
             <p>Today, “good enough”<br />is genuinely enough.</p>
-            <figcaption>Photo by Lia Den on Unsplash</figcaption>
+            <figcaption>Photo by Carlos Martinez on Unsplash</figcaption>
           </figure>
         </section>
       )}
