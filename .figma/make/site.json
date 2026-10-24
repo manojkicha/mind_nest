@@ -1,0 +1,10 @@
+{
+  "description": "A stress check-in for parents and caregivers that scores stress levels and offers guided breathing, playful worry-popping, and calming pause activities.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
