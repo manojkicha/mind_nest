@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import FamilyIllustration from "./FamilyIllustration";
 
 type Screen = "welcome" | "quiz" | "report" | "games";
 type Game = "breathe" | "tap" | "pause" | "smile" | "snake" | "xo";
@@ -312,12 +313,8 @@ export default function App() {
             <p className="privacy">No sign-up. No judgement. Just a moment for you.</p>
           </div>
           <figure className="hero-art">
-            <img
-              src="https://images.unsplash.com/photo-1504298589646-858f2c46ce1d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=1080"
-              alt="A happy baby in a pink cardigan smiling, with soft twinkling lights behind"
-            />
+            <FamilyIllustration />
             <p>Today, “good enough”<br />is genuinely enough.</p>
-            <figcaption>Photo by Carlos Martinez on Unsplash</figcaption>
           </figure>
         </section>
       )}
