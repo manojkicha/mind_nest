@@ -102,6 +102,10 @@ const funnyFaces = [
   { emoji: "😁", text: "Your biggest, cheesiest school-photo grin" },
 ];
 
+function shuffleAnswers() {
+  return questions.map((question) => [...question.answers].sort(() => Math.random() - 0.5));
+}
+
 function Mark() {
   return (
     <div className="mark" aria-hidden="true">
@@ -116,6 +120,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
+  const [answerOrder, setAnswerOrder] = useState(shuffleAnswers);
   const [game, setGame] = useState<Game | null>(null);
   const [breath, setBreath] = useState(0);
   const [taps, setTaps] = useState<number[]>([]);
@@ -237,6 +242,7 @@ export default function App() {
     setScreen("welcome");
     setStep(0);
     setAnswers([]);
+    setAnswerOrder(shuffleAnswers());
     setGame(null);
     setTaps([]);
     setPhoto("");
@@ -375,7 +381,7 @@ export default function App() {
             <p className="kicker">{questions[step].eyebrow}</p>
             <h2>{questions[step].text}</h2>
             <div className="answers picture-answers">
-              {questions[step].answers.map(({ emoji, label, value }) => (
+              {answerOrder[step].map(({ emoji, label, value }) => (
                 <button key={label} onClick={() => choose(value)}>
                   <span className="answer-emoji" aria-hidden="true">{emoji}</span>
                   {label}
